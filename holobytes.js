@@ -1,3 +1,4 @@
+const rootURL = "https://holopin.io"
 const blogURL = "https://blog.holopin.io";
 const holoBytesPath = "/holobyte/collect";
 const ul = document.getElementById("holobytes");
@@ -54,7 +55,7 @@ const main = async (_) => {
   for (const [_url, element] of Object.entries(holoBytesLinks)) {
     let li = document.createElement("li");
     let a = document.createElement("a");
-    let _uri = `${blogURL}${_url}`;
+    let _uri = `${rootURL}${_url}`;
     a.href = _uri;
     a.innerText = element.innerText;
     li.appendChild(a);
