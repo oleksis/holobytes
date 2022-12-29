@@ -1,76 +1,68 @@
-var blogURL = "https://blog.holopin.io";
-var holoBytesPath = "/holobyte/collect";
+const blogURL = "https://blog.holopin.io";
+const holoBytesPath = "/holobyte/collect";
+const ul = document.getElementById("holobytes");
+const list = document.createDocumentFragment();
+const holoBytesLinks = {};
 
-function getHoloBytesLinks(
-  doc = document,
-  holoBytesPath = "/holobyte/collect"
-) {
+function getHoloBytesLinks(doc = document, path = holoBytesPath) {
   const hbLinks = new Object();
-  var holobytesLinks = doc.getElementsByTagName("a");
+  let holobytesLinks = doc.getElementsByTagName("a");
   for (var counter = 0; counter < holobytesLinks.length; counter++) {
     const _url = new URL(holobytesLinks[counter].href);
-    if (holobytesLinks[counter].href.includes(holoBytesPath)) {
-      hbLinks[_url.href] = holobytesLinks[counter];
-      hbLinks[_url.href].style.background = "red";
+    if (holobytesLinks[counter].href.includes(path)) {
+      hbLinks[_url.pathname] = holobytesLinks[counter];
+      hbLinks[_url.pathname].style.background = "red";
     }
   }
   return hbLinks;
 }
 
-result = await fetch(blogURL)
-  .then(function (response) {
-    return response.text();
-  })
-  .then(function (html) {
-    const hbLinks = {};
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(html, "text/html");
-    let links = getHoloBytesLinks(doc);
-
-    for (const [key, value] of Object.entries(links)) {
-      hbLinks[key] = value;
-    }
-
-    var posts = getHoloBytesLinks(doc, "/posts/");
-
-    Object.keys(posts).map((url) => {
-      fetch(url)
-        .then(function (response) {
-          return response.text();
-        })
-        .then(function (html) {
-          let parser = new DOMParser();
-          let doc = parser.parseFromString(html, "text/html");
-          let links = getHoloBytesLinks(doc);
-
-          for (const [_url, element] of Object.entries(links)) {
-            hbLinks[_url] = element;
-          }
-        })
-        .catch(function (err) {
-          console.log("Failed to fetch post page: ", err);
-        });
+async function getDocumentObject(url) {
+  return await fetch(url)
+    .then(function (response) {
+      return response.text();
+    })
+    .then(function (html) {
+      let parser = new DOMParser();
+      return parser.parseFromString(html, "text/html");
+    })
+    .catch(function (err) {
+      console.log("Failed to fetch document: ", err);
     });
-
-    return hbLinks;
-  })
-  .catch(function (err) {
-    console.log("Failed to fetch page: ", err);
-  });
-
-setTimeout(() => {
-  console.log("HoloBytes hunted: " + Object.keys(result).length);
-  Object.keys(result).map((url) => {
-    console.log(url);
-  });
-}, 5000);
-
-function huntHoloBytesByClass() {
-  var holobytes = document.getElementsByClassName(
-    "hover:no-underline hover:text-neutral-700 text-sm font-base"
-  );
-  for (var counter = 0; counter < holobytes.length; counter++) {
-    holobytes[counter].style.background = "red";
-  }
-  return holobytes;
 }
+
+const main = async (_) => {
+  let doc = await getDocumentObject(blogURL);
+
+  let home = getHoloBytesLinks(doc);
+
+  for (const [key, value] of Object.entries(home)) {
+    holoBytesLinks[key] = value;
+  }
+
+  const posts = getHoloBytesLinks(doc, "/posts/");
+
+  for (const postURL of Object.keys(posts)) {
+    let doc = await getDocumentObject(`${blogURL}${postURL}`);
+    let postLinks = getHoloBytesLinks(doc);
+    for (const [_url, element] of Object.entries(postLinks)) {
+      holoBytesLinks[_url] = element;
+    }
+  }
+
+  console.log("HoloBytes hunted: " + Object.keys(holoBytesLinks).length);
+  for (const [_url, element] of Object.entries(holoBytesLinks)) {
+    let li = document.createElement("li");
+    let a = document.createElement("a");
+    let _uri = `${blogURL}${_url}`;
+    a.href = _uri;
+    a.innerText = element.innerText;
+    li.appendChild(a);
+    list.appendChild(li);
+    console.log(_uri);
+  }
+
+  ul.appendChild(list);
+};
+
+main();
