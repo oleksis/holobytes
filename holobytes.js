@@ -57,6 +57,8 @@ const main = async () => {
     let _uri = `${rootURL}${_url}`;
     a.href = _uri;
     a.innerText = element.innerText;
+    a.target = "_blank";
+    a.referrerPolicy = "no-referrer";
     li.appendChild(a);
     list.appendChild(li);
     console.log(_uri);
