@@ -16,3 +16,6 @@ repos:
     rev: v8.30.0
     hooks:
       - id: eslint
+        additional_dependencies:
+          - eslint@8.30.0
+          - eslint-config-prettier
