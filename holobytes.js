@@ -1,14 +1,14 @@
-const rootURL = "https://holopin.io"
+const rootURL = "https://holopin.io";
 const blogURL = "https://blog.holopin.io";
 const holoBytesPath = "/holobyte/collect";
 const ul = document.getElementById("holobytes");
 const list = document.createDocumentFragment();
 const holoBytesLinks = {};
 
-function getHoloBytesLinks(doc = document, path = holoBytesPath) {
-  const hbLinks = new Object();
+const getHoloBytesLinks = (doc = document, path = holoBytesPath) => {
+  const hbLinks = {};
   let holobytesLinks = doc.getElementsByTagName("a");
-  for (var counter = 0; counter < holobytesLinks.length; counter++) {
+  for (let counter = 0; counter < holobytesLinks.length; counter++) {
     const _url = new URL(holobytesLinks[counter].href);
     if (holobytesLinks[counter].href.includes(path)) {
       hbLinks[_url.pathname] = holobytesLinks[counter];
@@ -16,9 +16,9 @@ function getHoloBytesLinks(doc = document, path = holoBytesPath) {
     }
   }
   return hbLinks;
-}
+};
 
-async function getDocumentObject(url) {
+const getDocumentObject = async (url) => {
   return await fetch(url)
     .then(function (response) {
       return response.text();
@@ -30,15 +30,14 @@ async function getDocumentObject(url) {
     .catch(function (err) {
       console.log("Failed to fetch document: ", err);
     });
-}
+};
 
 const main = async (_) => {
   let doc = await getDocumentObject(blogURL);
-
   let home = getHoloBytesLinks(doc);
 
-  for (const [key, value] of Object.entries(home)) {
-    holoBytesLinks[key] = value;
+  for (const [_url, element] of Object.entries(home)) {
+    holoBytesLinks[_url] = element;
   }
 
   const posts = getHoloBytesLinks(doc, "/posts/");
@@ -51,7 +50,7 @@ const main = async (_) => {
     }
   }
 
-  console.log("HoloBytes hunted: " + Object.keys(holoBytesLinks).length);
+  console.log(`HoloBytes hunted: ${Object.keys(holoBytesLinks).length}`);
   for (const [_url, element] of Object.entries(holoBytesLinks)) {
     let li = document.createElement("li");
     let a = document.createElement("a");
