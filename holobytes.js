@@ -32,7 +32,7 @@ const getDocumentObject = async (url) => {
     });
 };
 
-const main = async (_) => {
+const main = async () => {
   let doc = await getDocumentObject(blogURL);
   let home = getHoloBytesLinks(doc);
 
