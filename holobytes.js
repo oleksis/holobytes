@@ -9,7 +9,7 @@ const getHoloBytesLinks = (doc = document, path = holoBytesPath) => {
   const hbLinks = {};
   let holobytesLinks = doc.getElementsByTagName("a");
   for (let counter = 0; counter < holobytesLinks.length; counter++) {
-    const _url = new URL(holobytesLinks[counter].href);
+    const _url = new URL(holobytesLinks[counter].href, rootURL);
     if (holobytesLinks[counter].href.includes(path)) {
       hbLinks[_url.pathname] = holobytesLinks[counter];
       hbLinks[_url.pathname].style.background = "red";
